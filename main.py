@@ -8,6 +8,7 @@ root = tk.Tk()
 root.title("BoberAI")
 root.configure(bg='#a1a1a1')
 root.iconbitmap('BoberAI_logo.ico')
+root.resizable(False,False)
 
 # Create a ScrolledText widget for displaying conversation
 conversation_text = ScrolledText(root, state='disabled', width=80, height=20)
