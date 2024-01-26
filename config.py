@@ -1,0 +1,6 @@
+# Speech Recognition
+SAMPLE_RATE = 48000
+DEFAULT_LANGUAGE = "en-US"
+
+# OpenAI API Key
+OPENAI_API_KEY = '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'
