@@ -1,27 +1,29 @@
 import tkinter as tk
-from tkinter.scrolledtext import ScrolledText
-import threading
+import os
+import sys
+import ctypes
 import speech
 
-# Initialize the main window
-root = tk.Tk()
-root.title("BoberAI")
-root.configure(bg='#a1a1a1')
-root.iconbitmap('BoberAI_logo.ico')
-root.resizable(False,False)
+from window_setup import setup_window
+from gui_elements import create_conversation_text, create_info_label, button_style, create_settings_panel
+from event_handlers import setup_window_controls, setup_recording_controls, setup_screenshot_controls
+from config import set_language, set_prog_language
 
-# Create a ScrolledText widget for displaying conversation
-conversation_text = ScrolledText(root, state='disabled', width=80, height=20)
-conversation_text.pack(padx=10, pady=10)
+try:
+    ctypes.windll.shcore.SetProcessDpiAwareness(True)
+except:
+    pass
 
-# Define tags for different senders
-conversation_text.tag_configure("AI_Tag", foreground="#008000")  # Green for AI prefix and line
-conversation_text.tag_configure("Me_Tag", foreground="#0000FF")  # Blue for Me prefix and line
-conversation_text.tag_configure("Client_Tag", foreground="#FFA500")  # Orange for Client prefix and line
+user_scrolled_up = False
 
-# Label for [INFO] messages
-info_label = tk.Label(root, text="", bg='#a1a1a1', fg="blue")
-info_label.pack(side='top', pady=5)
+def on_user_scroll(event=None):
+    global user_scrolled_up
+    # if bottom of scroll region is visible, user is not scrolled up
+    user_scrolled_up = conversation_text.yview()[1] < 1.0
+
+def resource_path(relative_path):
+    base_path = getattr(sys, '_MEIPASS', os.path.dirname(os.path.abspath(__file__)))
+    return os.path.join(base_path, relative_path)
 
 def update_info_label(message, clear_after=None):
     """Update the info label with a message and optionally clear it after a delay."""
@@ -29,16 +31,16 @@ def update_info_label(message, clear_after=None):
     if clear_after:
         root.after(clear_after, lambda: info_label.config(text=""))
 
-# Update text function for GUI
 def update_text(message):
     if "[INFO]" in message or "[REC]" in message:
-        # Remove the [INFO] or [REC] prefix
         display_message = message.replace("[INFO]", "").replace("[REC]", "").strip()
         update_info_label(display_message, clear_after=None if "[REC]" in message else 1000)
     else:
         conversation_text.configure(state='normal')
         tag = None
         prefix = ""
+        
+        # Determine the message type
         if message.startswith("BoberAI:"):
             tag = "AI_Tag"
             prefix = "BoberAI:"
@@ -53,68 +55,55 @@ def update_text(message):
             message = message.replace("Client:", "").strip()
 
         conversation_text.insert(tk.END, prefix + " ", tag)
-        conversation_text.insert(tk.END, message + "\n")
+        
+        parts = message.split("```")
+        for i, part in enumerate(parts):
+            if i % 2 == 0:
+                conversation_text.insert(tk.END, part)
+            else:
+                conversation_text.insert(tk.END, "\n")
+                conversation_text.insert(tk.END, part, "code")
+                conversation_text.insert(tk.END, "\n")
+        
+        conversation_text.insert(tk.END, "\n")
         conversation_text.insert(tk.END, "-"*50 + "\n\n", tag)
         conversation_text.configure(state='disabled')
-        conversation_text.see(tk.END)
+        if not user_scrolled_up:
+            conversation_text.see(tk.END)
 
-# Set the GUI update callback
-speech.set_update_callback(update_text)
+def on_language_change(new_lang):
+    set_language(new_lang)
 
-# Key event handlers
-def on_key_press(event):
-    if event.char == 'r':
-        start_recording()
-    elif event.char == 'a':
-        start_audio_recording()
+def on_framework_change(new_lang):
+    set_prog_language(new_lang)
 
-def on_key_release(event):
-    if event.char == 'r':
-        stop_recording()
-    elif event.char == 'a':
-        stop_audio_recording()
 
-def start_recording():
-    speech.is_recording = True
 
-def stop_recording():
-    speech.is_recording = False
-    update_info_label("")
+def main():
+    global root, conversation_text, info_label
 
-def start_audio_recording():
-    if not speech.is_audio_recording:
-        speech.start_time = speech.time.time()
-        threading.Thread(target=speech.record_audio).start()
+    # Initialize main window
+    root = tk.Tk()
+    root = setup_window(root, resource_path)
 
-def stop_audio_recording():
-    speech.is_audio_recording = False
+    # Create GUI elements
+    conversation_text = create_conversation_text(root)
+    conversation_text.bind("<MouseWheel>", on_user_scroll) 
+    info_label = create_info_label(root)
+    
+    create_settings_panel(root, on_language_change, on_framework_change)
 
-def set_language_to_english():
-    speech.DEFAULT_LANGUAGE = "en-US"
-    update_text("[INFO] Switched to English")
+    # Set up controls
+    setup_window_controls(root)
+    setup_screenshot_controls(root, speech)
+    setup_recording_controls(root, speech, update_info_label)
 
-def set_language_to_serbian():
-    speech.DEFAULT_LANGUAGE = "sr-RS"
-    update_text("[INFO] Prebaceno na Srpski jezik")
+    # Set up speech callback
+    speech.set_update_callback(update_text)
 
-# Bind key events
-root.bind('<KeyPress>', on_key_press)
-root.bind('<KeyRelease>', on_key_release)
+    # Start GUI loop
+    root.mainloop()
 
-# Buttons for language switching
-english_button = tk.Button(root, text="Switch to English", command=set_language_to_english)
-english_button.pack(side='left', padx=10, pady=10)
 
-serbian_button = tk.Button(root, text="Switch to Serbian", command=set_language_to_serbian)
-serbian_button.pack(side='right', padx=10, pady=10)
-
-# Start the speech recording thread
-speech_thread = threading.Thread(target=speech.record_mic)
-speech_thread.start()
-
-# Start the GUI loop
-root.mainloop()
-
-# Clean up when closing the GUI
-speech.stop_recording.set()
-speech_thread.join()
+if __name__ == "__main__":
+    main()

@@ -1,26 +1,67 @@
-# BoberAI Speech Recognition Chat
+# BoberAI Assistant
+
 ## Description
-BoberAI Speech Recognition Chat is a versatile desktop application designed for real-time voice-to-text transcription and response generation using OpenAI's language models. It not only transcribes user speech but also has the capability to record audio from the default speaker. This functionality makes it an ideal tool for various interactive situations like virtual meetings, educational lectures, collaborative brainstorming sessions, or casual conversations where capturing and responding to spoken dialogue is valuable.
+BoberAI Assistant is a desktop application that combines real-time voice transcription, speaker audio recording, and AI-powered responses. It's designed for interview preparation, meetings, lectures, and general AI assistance with support for both English and Serbian languages.
 
 ## Features
-* **Voice Recognition:** Transcribes user speech in real-time for instant text representation of verbal communication.
-* **Audio Recording:** Capable of recording audio directly from the default speaker, making it suitable for recording and transcribing meetings, lectures, or any spoken interactions.
-* **AI-Powered Responses:** Utilizes OpenAI's language models to generate contextually relevant and intelligent responses.
-* **Multilingual Support:** Supports English and Serbian language.
-* **Interactive GUI:** Offers an intuitive graphical user interface with language-switching capabilities and a clear display of conversation history.
+- **Voice Recognition**: Real-time speech-to-text transcription
+- **Speaker Recording**: Capture audio from your computer's default speaker
+- **AI-Powered Responses**: Uses OpenAI's GPT models for intelligent interactions
+- **Code Analysis**: Screenshot any code to get explanations or debugging help
+- **Multilingual**: Supports English and Serbian
+- **Programming Help**: Specialized assistance for Python and SQL code
+- **Capture Protection**: Window capture protection for secure usage
+
+## Requirements
+- Windows OS
+- Python 3.8+
+- OpenAI API key
+- System audio devices (microphone and speakers)
+
+## Installation
+
+1. Clone the repository:
+```bash
+git clone <repository-url>
+```
+
+2. Create and activate virtual environment:
+```bash
+python -m venv venv
+.\venv\Scripts\activate
+```
+
+3. Install requirements:
+```bash
+pip install -r requirements.txt
+```
+
+4. Create `.env` file in the root directory:
+```env
+OPENAI_API_KEY=your_api_key_here
+```
 
 ## Usage
-Run the application with Python:
-```
+
+### Starting the Application
+```bash
 python main.py
 ```
 
-## Basic Operations
-1. **Voice Recognition:** Press 'R' to start, speak, and release 'R' to transcribe speech.
-2. **Audio Capture:** Press 'A' to begin/end recording from the default speaker, suitable for capturing audio during meetings or lectures.
-3. **View Transcription and Response:** The transcribed text and AI-generated responses are displayed in the chat window.
-4. **Language Switching:** Toggle between languages using the provided buttons.
-   
-## Configuration
-* **Languages:** Default and additional languages can be configured in `config.py`.
-* **OpenAI API:** Set up your OpenAI API key for AI interactions in `config.py`.
+### Keyboard Controls
+- **A**: Start/Stop audio recording from system speaker
+- **Ctrl+Shift+S**: Take screenshot for code explanation
+- **Ctrl+Shift+D**: Take screenshot for code debugging
+- **Ctrl+Shift+H**: Toggle window visibility
+
+### Settings Panel
+- Toggle between English and Serbian languages
+- Switch between Python and SQL code analysis
+
+## Security Notes
+- The window is protected against screen capture
+- API keys should be stored in `.env` file
+- Never commit `.env` file to version control
+
+## Dependencies
+See `requirements.txt` for complete list of dependencies.
