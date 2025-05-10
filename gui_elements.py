@@ -6,11 +6,12 @@ def create_conversation_text(root):
     conversation_text = ScrolledText(
         root,
         state='disabled',
-        width=80,
+        width=100,
         height=20,
         wrap="word",
         bg='#262626',
-        fg='white'
+        fg='white',
+        font=("Segoe UI", 12)
     )
     conversation_text.pack(padx=10, pady=10)
     
@@ -21,7 +22,7 @@ def create_conversation_text(root):
     conversation_text.tag_configure("code", 
         background="#1E1E1E",
         foreground="#D4D4D4",
-        font=("Consolas", 10),
+        font=("Consolas", 12),
         relief="solid",
         borderwidth=1,
         spacing1=10,
@@ -36,7 +37,8 @@ def create_info_label(root):
         root,
         text="",
         bg='#262626',
-        fg="white"
+        fg="white",
+        font=("Segoe UI", 12)
     )
     info_label.pack(side='top', pady=5)
     return info_label
@@ -74,7 +76,8 @@ def create_settings_panel(root, on_language_change=None, on_framework_change=Non
         lang_frame,
         text="Language:",
         bg='#1E1E1E',
-        fg='white'
+        fg='white',
+        font=("Segoe UI", 12) 
     ).pack(anchor='w')
     
     # Create language variable
@@ -94,7 +97,8 @@ def create_settings_panel(root, on_language_change=None, on_framework_change=Non
         bg='#1E1E1E',
         fg='white',
         selectcolor='#262626',
-        activebackground='#1E1E1E'
+        activebackground='#1E1E1E',
+        font=("Segoe UI", 12) 
     )
     en_check.pack(anchor='w')
     
@@ -108,7 +112,8 @@ def create_settings_panel(root, on_language_change=None, on_framework_change=Non
         bg='#1E1E1E',
         fg='white',
         selectcolor='#262626',
-        activebackground='#1E1E1E'
+        activebackground='#1E1E1E',
+        font=("Segoe UI", 12) 
     )
     sr_check.pack(anchor='w')
 
@@ -121,7 +126,8 @@ def create_settings_panel(root, on_language_change=None, on_framework_change=Non
         framework_frame,
         text="Framework:",
         bg='#1E1E1E',
-        fg='white'
+        fg='white',
+        font=("Segoe UI", 12) 
     ).pack(anchor='w')
     
     # Create framework variable
@@ -141,7 +147,8 @@ def create_settings_panel(root, on_language_change=None, on_framework_change=Non
         bg='#1E1E1E',
         fg='white',
         selectcolor='#262626',
-        activebackground='#1E1E1E'
+        activebackground='#1E1E1E',
+        font=("Segoe UI", 12) 
     )
     python_check.pack(anchor='w')
     
@@ -155,7 +162,8 @@ def create_settings_panel(root, on_language_change=None, on_framework_change=Non
         bg='#1E1E1E',
         fg='white',
         selectcolor='#262626',
-        activebackground='#1E1E1E'
+        activebackground='#1E1E1E',
+        font=("Segoe UI", 12) 
     )
     sql_check.pack(anchor='w')
     

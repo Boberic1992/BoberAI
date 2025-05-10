@@ -225,6 +225,8 @@ def continuous_audio_recording():
                             update_text(f"[ERROR] Transcription failed: {str(e)}")
                     
                     threading.Thread(target=process_audio).start()
+                else:
+                    time.sleep(0.1)
     
     except Exception as e:
         update_text(f"[ERROR] Recording failed: {str(e)}")
