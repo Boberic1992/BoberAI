@@ -4,34 +4,47 @@ from config import OPENAI_API_KEY, SYSTEM_MESSAGE
 import soundfile as sf
 import time
 from faster_whisper import WhisperModel
+from rag_utils import query_codebase
 
 client = OpenAI(api_key=os.getenv("OPENAI_API_KEY", OPENAI_API_KEY))
 # anthropic_client = Anthropic(api_key=os.getenv("ANTHROPIC_API_KEY", ANTHROPIC_API_KEY))
 whisper_model = WhisperModel("base", device="cpu", compute_type="int8")
 
 def get_openai_response(conversation_history):
+    from config import current_interview_mode
     try:
-        # check if the message contains an image  
-        latest_message = conversation_history[-1]
-        if isinstance(latest_message.get('content'), list):
-            response = client.chat.completions.create(
-                model="gpt-4.1-mini",
-                messages=[latest_message]
-                # max_tokens=500
-            )
-        else:
-            if not conversation_history or conversation_history[0].get('role') != 'system':
-                conversation_history.insert(0, SYSTEM_MESSAGE)
-
-            # always keep the first message, and limit total to 20
-            conversation_history = [conversation_history[0]] + conversation_history[-19:]
-            # print(f'Conversation history: {conversation_history}')
+        if current_interview_mode == "Standard":
+            messages = [SYSTEM_MESSAGE] + conversation_history[-19:]
             response = client.chat.completions.create(
                 model="gpt-4.1-nano",
-                messages=conversation_history
+                messages=messages
             )
-            
-        return response.choices[0].message.content.strip()
+            return response.choices[0].message.content.strip()
+        elif current_interview_mode == "Case Study":
+            user_question = conversation_history[-1]['content']
+            code_chunks = query_codebase(user_question, top_k=5)
+            # Format code context for the system prompt
+            code_context = "\n\n".join(
+                f"File: {meta['file']} (lines {meta['start_line']}-{meta['end_line']}):\n{doc}"
+                for doc, meta in code_chunks
+            )
+            system_message = {
+                "role": "system",
+                "content": (
+                    "You are an AI assistant answering questions about the following codebase. "
+                    "Use the provided code context to answer the user's question.\n\n"
+                    f"Code Context:\n{code_context}\n\n"
+                    "Answer concisely and reference the code where relevant."
+                )
+            }
+            messages = [system_message] + conversation_history[-19:]
+            response = client.chat.completions.create(
+                model="gpt-4.1-nano",
+                messages=messages
+            )
+            return response.choices[0].message.content.strip()
+        else:
+            return "Unknown interview mode."
     except Exception as e:
         return f"An error occurred: {e}"
 

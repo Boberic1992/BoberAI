@@ -59,3 +59,11 @@ current_prog_language = "Python"
 def set_prog_language(lang):
     global current_prog_language
     current_prog_language = lang
+    
+current_interview_mode = "Standard"
+
+def set_interview_mode(mode):
+    global current_interview_mode
+    print(f"[DEBUG] config.py - Setting mode to: {mode}") 
+    current_interview_mode = mode
+    print(f"[DEBUG] config.py - Mode is now: {current_interview_mode}")

@@ -51,7 +51,7 @@ button_style = {
     'pady': 5
 }
 
-def create_settings_panel(root, on_language_change=None, on_framework_change=None):
+def create_settings_panel(root, on_language_change=None, on_framework_change=None, on_mode_change=None):
     settings_panel = tk.Frame(
         root,
         bg='#1E1E1E',
@@ -166,6 +166,51 @@ def create_settings_panel(root, on_language_change=None, on_framework_change=Non
         font=("Segoe UI", 12) 
     )
     sql_check.pack(anchor='w')
+
+    mode_frame = tk.Frame(settings_panel, bg='#1E1E1E')
+    mode_frame.pack(side='left', padx=20, pady=10)
+
+    tk.Label(
+        mode_frame,
+        text="Interview Mode:",
+        bg='#1E1E1E',
+        fg='white',
+        font=("Segoe UI", 12)
+    ).pack(anchor='w')
+
+    selected_mode = tk.StringVar(value="Standard")
+
+    def on_mode_select():
+        if on_mode_change:
+            on_mode_change(selected_mode.get())
+
+    standard_radio = tk.Radiobutton(
+        mode_frame,
+        text="Standard",
+        variable=selected_mode,
+        value="Standard",
+        command=on_mode_select,
+        bg='#1E1E1E',
+        fg='white',
+        selectcolor='#262626',
+        activebackground='#1E1E1E',
+        font=("Segoe UI", 12)
+    )
+    standard_radio.pack(anchor='w')
+
+    case_study_radio = tk.Radiobutton(
+        mode_frame,
+        text="Case Study",
+        variable=selected_mode,
+        value="Case Study",
+        command=on_mode_select,
+        bg='#1E1E1E',
+        fg='white',
+        selectcolor='#262626',
+        activebackground='#1E1E1E',
+        font=("Segoe UI", 12)
+    )
+    case_study_radio.pack(anchor='w')
     
     # Animation state and toggle function (keep existing code)
     settings_panel.is_visible = False
@@ -181,4 +226,4 @@ def create_settings_panel(root, on_language_change=None, on_framework_change=Non
     
     toggle_button.bind('<Button-1>', toggle_panel)
     
-    return settings_panel, selected_lang, selected_framework
+    return settings_panel, selected_lang, selected_framework, selected_mode

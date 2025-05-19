@@ -5,9 +5,9 @@ import ctypes
 import speech
 
 from window_setup import setup_window
-from gui_elements import create_conversation_text, create_info_label, button_style, create_settings_panel
+from gui_elements import create_conversation_text, create_info_label, create_settings_panel
 from event_handlers import setup_window_controls, setup_recording_controls, setup_screenshot_controls
-from config import set_language, set_prog_language
+from config import set_language, set_prog_language, set_interview_mode
 
 try:
     ctypes.windll.shcore.SetProcessDpiAwareness(True)
@@ -77,7 +77,8 @@ def on_language_change(new_lang):
 def on_framework_change(new_lang):
     set_prog_language(new_lang)
 
-
+def on_mode_change(new_mode):
+    set_interview_mode(new_mode)
 
 def main():
     global root, conversation_text, info_label
@@ -91,7 +92,7 @@ def main():
     conversation_text.bind("<MouseWheel>", on_user_scroll) 
     info_label = create_info_label(root)
     
-    create_settings_panel(root, on_language_change, on_framework_change)
+    create_settings_panel(root, on_language_change, on_framework_change, on_mode_change)
 
     # Set up controls
     setup_window_controls(root)
