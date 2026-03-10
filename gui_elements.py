@@ -1,6 +1,6 @@
 import tkinter as tk
 from tkinter.scrolledtext import ScrolledText
-from ctypes import windll
+
 
 def create_conversation_text(root):
     conversation_text = ScrolledText(
@@ -14,12 +14,11 @@ def create_conversation_text(root):
         font=("Segoe UI", 12)
     )
     conversation_text.pack(padx=10, pady=10)
-    
-    # Configure tags
+
     conversation_text.tag_configure("AI_Tag", foreground="#00FF00")
     conversation_text.tag_configure("Me_Tag", foreground="#00BFFF")
     conversation_text.tag_configure("Client_Tag", foreground="#FFA500")
-    conversation_text.tag_configure("code", 
+    conversation_text.tag_configure("code",
         background="#1E1E1E",
         foreground="#D4D4D4",
         font=("Consolas", 12),
@@ -29,8 +28,9 @@ def create_conversation_text(root):
         spacing3=10,
         rmargin=10
     )
-    
+
     return conversation_text
+
 
 def create_info_label(root):
     info_label = tk.Label(
@@ -43,178 +43,67 @@ def create_info_label(root):
     info_label.pack(side='top', pady=5)
     return info_label
 
-button_style = {
-    'bg': '#262626',
-    'fg': 'white',
-    'relief': 'flat',
-    'padx': 10,
-    'pady': 5
-}
+
+def _create_radio_group(parent, label, options, default, on_change):
+    """Create a labeled group of radio buttons."""
+    frame = tk.Frame(parent, bg='#1E1E1E')
+    frame.pack(side='left', padx=20, pady=10)
+
+    tk.Label(
+        frame, text=label, bg='#1E1E1E', fg='white', font=("Segoe UI", 12)
+    ).pack(anchor='w')
+
+    selected = tk.StringVar(value=default)
+
+    def on_select():
+        if on_change:
+            on_change(selected.get())
+
+    for option_text, option_value in options:
+        tk.Radiobutton(
+            frame,
+            text=option_text,
+            variable=selected,
+            value=option_value,
+            command=on_select,
+            bg='#1E1E1E',
+            fg='white',
+            selectcolor='#262626',
+            activebackground='#1E1E1E',
+            font=("Segoe UI", 12)
+        ).pack(anchor='w')
+
+    return frame, selected
+
 
 def create_settings_panel(root, on_language_change=None, on_framework_change=None, on_mode_change=None):
-    settings_panel = tk.Frame(
-        root,
-        bg='#1E1E1E',
-        height=100
-    )
-    
+    settings_panel = tk.Frame(root, bg='#1E1E1E', height=100)
+
     toggle_button = tk.Label(
-        root,
-        text="▼",
-        bg='#262626',
-        fg='white',
-        cursor='hand2'
+        root, text="▼", bg='#262626', fg='white', cursor='hand2'
     )
     toggle_button.pack(side='bottom', pady=0)
-    
-    # Language selection frame on the left
-    lang_frame = tk.Frame(settings_panel, bg='#1E1E1E')
-    lang_frame.pack(side='left', padx=20, pady=10)
-    
-    # Language label
-    tk.Label(
-        lang_frame,
-        text="Language:",
-        bg='#1E1E1E',
-        fg='white',
-        font=("Segoe UI", 12) 
-    ).pack(anchor='w')
-    
-    # Create language variable
-    selected_lang = tk.StringVar(value="en")
-    
-    def on_lang_select():
-        if on_language_change:
-            on_language_change(selected_lang.get())
-    
-    # English checkbox
-    en_check = tk.Radiobutton(
-        lang_frame,
-        text="English",
-        variable=selected_lang,
-        value="en",
-        command=on_lang_select,
-        bg='#1E1E1E',
-        fg='white',
-        selectcolor='#262626',
-        activebackground='#1E1E1E',
-        font=("Segoe UI", 12) 
+
+    _, selected_lang = _create_radio_group(
+        settings_panel, "Language:",
+        [("English", "en"), ("Serbian", "sr")],
+        "en", on_language_change
     )
-    en_check.pack(anchor='w')
-    
-    # Serbian checkbox
-    sr_check = tk.Radiobutton(
-        lang_frame,
-        text="Serbian",
-        variable=selected_lang,
-        value="sr",
-        command=on_lang_select,
-        bg='#1E1E1E',
-        fg='white',
-        selectcolor='#262626',
-        activebackground='#1E1E1E',
-        font=("Segoe UI", 12) 
+
+    _, selected_framework = _create_radio_group(
+        settings_panel, "Framework:",
+        [("Python", "Python"), ("SQL", "SQL")],
+        "Python", on_framework_change
     )
-    sr_check.pack(anchor='w')
 
-    # Framework selection frame on the right
-    framework_frame = tk.Frame(settings_panel, bg='#1E1E1E')
-    framework_frame.pack(side='left', padx=20, pady=10)
-    
-    # Framework label
-    tk.Label(
-        framework_frame,
-        text="Framework:",
-        bg='#1E1E1E',
-        fg='white',
-        font=("Segoe UI", 12) 
-    ).pack(anchor='w')
-    
-    # Create framework variable
-    selected_framework = tk.StringVar(value="Python")
-    
-    def on_framework_select():
-        if on_framework_change:
-            on_framework_change(selected_framework.get())
-    
-    # Python checkbox
-    python_check = tk.Radiobutton(
-        framework_frame,
-        text="Python",
-        variable=selected_framework,
-        value="Python",
-        command=on_framework_select,
-        bg='#1E1E1E',
-        fg='white',
-        selectcolor='#262626',
-        activebackground='#1E1E1E',
-        font=("Segoe UI", 12) 
+    _, selected_mode = _create_radio_group(
+        settings_panel, "Interview Mode:",
+        [("Standard", "Standard"), ("Case Study", "Case Study")],
+        "Standard", on_mode_change
     )
-    python_check.pack(anchor='w')
-    
-    # SQL checkbox
-    sql_check = tk.Radiobutton(
-        framework_frame,
-        text="SQL",
-        variable=selected_framework,
-        value="SQL",
-        command=on_framework_select,
-        bg='#1E1E1E',
-        fg='white',
-        selectcolor='#262626',
-        activebackground='#1E1E1E',
-        font=("Segoe UI", 12) 
-    )
-    sql_check.pack(anchor='w')
 
-    mode_frame = tk.Frame(settings_panel, bg='#1E1E1E')
-    mode_frame.pack(side='left', padx=20, pady=10)
-
-    tk.Label(
-        mode_frame,
-        text="Interview Mode:",
-        bg='#1E1E1E',
-        fg='white',
-        font=("Segoe UI", 12)
-    ).pack(anchor='w')
-
-    selected_mode = tk.StringVar(value="Standard")
-
-    def on_mode_select():
-        if on_mode_change:
-            on_mode_change(selected_mode.get())
-
-    standard_radio = tk.Radiobutton(
-        mode_frame,
-        text="Standard",
-        variable=selected_mode,
-        value="Standard",
-        command=on_mode_select,
-        bg='#1E1E1E',
-        fg='white',
-        selectcolor='#262626',
-        activebackground='#1E1E1E',
-        font=("Segoe UI", 12)
-    )
-    standard_radio.pack(anchor='w')
-
-    case_study_radio = tk.Radiobutton(
-        mode_frame,
-        text="Case Study",
-        variable=selected_mode,
-        value="Case Study",
-        command=on_mode_select,
-        bg='#1E1E1E',
-        fg='white',
-        selectcolor='#262626',
-        activebackground='#1E1E1E',
-        font=("Segoe UI", 12)
-    )
-    case_study_radio.pack(anchor='w')
-    
-    # Animation state and toggle function (keep existing code)
     settings_panel.is_visible = False
-    
+
     def toggle_panel(event):
         if not settings_panel.is_visible:
             settings_panel.pack(side='bottom', fill='x', before=toggle_button)
@@ -223,7 +112,7 @@ def create_settings_panel(root, on_language_change=None, on_framework_change=Non
             settings_panel.pack_forget()
             toggle_button.configure(text="▼")
         settings_panel.is_visible = not settings_panel.is_visible
-    
+
     toggle_button.bind('<Button-1>', toggle_panel)
-    
+
     return settings_panel, selected_lang, selected_framework, selected_mode
