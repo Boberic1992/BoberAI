@@ -61,7 +61,6 @@ python main.py
 ## Security Notes
 - The window is protected against screen capture
 - API keys should be stored in `.env` file
-- Never commit `.env` file to version control
 
 ## Dependencies
 See `requirements.txt` for complete list of dependencies.

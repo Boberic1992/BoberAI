@@ -5,8 +5,6 @@ soundcard>=0.4.2
 soundfile>=0.10.3
 numpy>=1.19.5
 
-faster-whisper>=0.9.0
-
 Pillow>=9.0.0
 pywin32>=228
 

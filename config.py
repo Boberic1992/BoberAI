@@ -8,14 +8,14 @@ SAMPLE_RATE = 48000
 DEFAULT_LANGUAGE = "en-US"
 OPENAI_API_KEY = os.getenv('OPENAI_API_KEY')
 
-SYSTEM_MESSAGE = {
-    "role": "system",
-    "content": (
+_LANGUAGE_NAMES = {"en": "English", "sr": "Serbian"}
+
+_SYSTEM_CONTENT_TEMPLATE = (
         "You are a concise AI assistant that MUST follow these rules:\n"
         "1. Keep answers to the point\n"
         "2. If the question is about a specific technology, explain it in a relaxed, conversational way, "
         "as if the candidate is talking to a colleague, not giving a formal presentation\n"
-        "3. ALWAYS respond in the same language as the input - if the user speaks English, respond in English. If the user speaks Serbian, respond in Serbian.\n"
+        "3. ALWAYS respond in {language} regardless of what language the input is in.\n"
         "4. For code snippets, include only essential parts\n"
         "5. When responding to Client messages, treat them as interview questions, "
         "but answer in a natural, spoken style — simple sentences, no corporate buzzwords\n"
@@ -50,7 +50,6 @@ SYSTEM_MESSAGE = {
         "BI Tools: Power BI, Looker Studio\n"
         "OS: MacOS, Windows"
     )
-}
 
 current_language = "en"
 current_prog_language = "Python"
@@ -70,3 +69,11 @@ def set_prog_language(lang):
 def set_interview_mode(mode):
     global current_interview_mode
     current_interview_mode = mode
+
+
+def get_system_message():
+    language = _LANGUAGE_NAMES.get(current_language, "English")
+    return {
+        "role": "system",
+        "content": _SYSTEM_CONTENT_TEMPLATE.format(language=language)
+    }
